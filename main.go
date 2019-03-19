@@ -63,6 +63,7 @@ func LatestVersions(releases []*semver.Version, minVersion *semver.Version) []*s
 	return versionSlice
 }
 
+// Given an input in the format of "repository,min_version", this function will output the latest versions of this repository to stdout.
 func TackleEachApplication(information string) {
 	info := strings.Split(information, ",")
 	respository := strings.Split(info[0], "/")
@@ -72,9 +73,7 @@ func TackleEachApplication(information string) {
 	ctx := context.Background()
 	opt := &github.ListOptions{PerPage: 10}
 	releases, _, err := client.Repositories.ListReleases(ctx, respository[0], respository[1], opt)
-	if err != nil {
-		log.Fatal(err) // is this really a good way?
-	}
+	check(err)
 	minVersion := semver.New(info[1])
 	allReleases := make([]*semver.Version, len(releases))
 	for i, release := range releases {
@@ -101,7 +100,5 @@ func main() {
 		TackleEachApplication(fileScanner.Text())
 	}
 
-	if err := fileScanner.Err(); err != nil {
-	    log.Fatal(err)
-	}
+	check(fileScanner.Err())
 }
