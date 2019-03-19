@@ -41,23 +41,19 @@ func LatestVersions(releases []*semver.Version, minVersion *semver.Version) []*s
 	
 	if (*maxPatch).Compare(*minVersion) != 1 {
 		return versionSlice
+	} else {
+		versionSlice = append(versionSlice, maxPatch)
 	}
 	
 	for _, release := range releases {
 		if i := (*release).Compare(*minVersion); i == 1 {
 			if (*maxPatch).Major != (*release).Major || (*maxPatch).Minor != (*release).Minor {
-				versionSlice = append(versionSlice, maxPatch)
 				maxPatch = release
+				versionSlice = append(versionSlice, maxPatch)
 			}
 		} else {
 			break
 		}
-	}
-
-	if (len(versionSlice) == 0){
-		versionSlice = append(versionSlice, maxPatch)
-	} else if (versionSlice[len(versionSlice) - 1] != maxPatch) {
-		versionSlice = append(versionSlice, maxPatch)
 	}
 	
 	return versionSlice
