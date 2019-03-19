@@ -39,6 +39,10 @@ func LatestVersions(releases []*semver.Version, minVersion *semver.Version) []*s
 	ReverseArray(releases)
 	maxPatch = releases[0]
 	
+	if (*maxPatch).Compare(*minVersion) != 1 {
+		return versionSlice
+	}
+	
 	for _, release := range releases {
 		if i := (*release).Compare(*minVersion); i == 1 {
 			if (*maxPatch).Major != (*release).Major || (*maxPatch).Minor != (*release).Minor {
@@ -63,7 +67,7 @@ func TackleEachApplication(information string) {
 	info := strings.Split(information, ",")
 	respository := strings.Split(info[0], "/")
 
-    // Github
+	// Github
 	client := github.NewClient(nil)
 	ctx := context.Background()
 	opt := &github.ListOptions{PerPage: 10}
@@ -85,18 +89,14 @@ func TackleEachApplication(information string) {
 	fmt.Printf("latest versions of %s/%s: %s\n", respository[0], respository[1], versionSlice)
 }
 
-// Here we implement the basics of communicating with github through the library as well as printing the version
-// You will need to implement LatestVersions function as well as make this application support the file format outlined in the README
-// Please use the format defined by the fmt.Printf line at the bottom, as we will define a passing coding challenge as one that outputs
-// the correct information, including this line
 func main() {
 	filePath := os.Args[1]
 	f, err := os.Open(filePath)
 	check(err)
 
-    fileScanner := bufio.NewScanner(f)
-    // I'm not sure whether the first line of the file will be a redundant "repository,min_version" as in the example, 
-    // or some actual data that needs to be processed. I assumed that there is no redundant line in this file. 
+	fileScanner := bufio.NewScanner(f)
+	// I'm not sure whether the first line of the file will be a redundant "repository,min_version" as in the example, 
+	// or some actual data that needs to be processed. I assumed that there is no redundant line in this file. 
 	for fileScanner.Scan() {
 		TackleEachApplication(fileScanner.Text())
 	}
